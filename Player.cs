@@ -5,7 +5,8 @@ using System.Collections;
 [RequireComponent (typeof(PlayerPhysics))]
 public class Player : MonoBehaviour {
 	
-	public float gravity = 20;
+	public float gravity;
+	float defaultGravity = 20;
 	public float speed = 8;
 	public float acceleration = 30;
 	public float jumpHeight = 12;
@@ -24,13 +25,12 @@ public class Player : MonoBehaviour {
 	
 	
 	
-	
 	// Use this for initialization
 	public void Start () 
 	{
 		playerPhysics = GetComponent<PlayerPhysics>();
 		playerInfo = GetComponent<PlayerInfo>();
-		startPos.y = transform.position.y + 5;
+		startPos.y = transform.position.y;
 		startPos.x = transform.position.x;
 	}
 	// Update is called once per frame
@@ -38,36 +38,24 @@ public class Player : MonoBehaviour {
 	{
 		CheckPlayerMovement();
 		UnderWater();
-		CheckForm();
-		/*if(transform.position.y < -50)
-		{
-			transform.position = startPos;
-		}*/
-		
-		//Debug.Log("Player collider cent: " + playerPhysics.collider.center);
+		ChangeForm();
+
 	}
-	void CheckForm()
+	void ChangeForm()
 	{
-		if(Input.GetKeyUp(KeyCode.F))
+		if(Input.GetKeyUp(KeyCode.Alpha2))
 		{
-			if(playerInfo.GetForm == PlayerInfo.Form.Wizard)
-			{
-				
-				playerInfo.GetForm = PlayerInfo.Form.Croc;
-				playerInfo.damageResistance = 5;
-			}
-			else
-			{
-				playerInfo.GetForm = PlayerInfo.Form.Wizard;
-				playerInfo.damageResistance = 0;
-			}	
-			playerInfo.manaTimer = 0;
-			Debug.Log(playerInfo.GetForm);
+			playerInfo.GetForm = PlayerInfo.Form.Croc;
 		}
+		if(Input.GetKeyUp(KeyCode.Alpha1))
+		{
+			playerInfo.GetForm = PlayerInfo.Form.Wizard;
+		}
+		playerInfo.manaTimer = 0;
 	}
 	void UnderWater()
 	{
-		if(playerPhysics.underWater)
+		if(playerInfo.underWater)
 		{
 			if(playerInfo.GetForm == PlayerInfo.Form.Wizard)
 			{
@@ -91,17 +79,16 @@ public class Player : MonoBehaviour {
 		{
 			speed = 8;
 			acceleration = 30;
-			gravity = 20;
+			gravity = defaultGravity;
 			playerInfo.underWater = false;
 			
 		}
 	}
 	void OnTriggerEnter(Collider collider)
 	{
-		if(collider.transform.tag == "Bullet")
+		if(collider.GetComponent<Projectile>())
 		{
-			playerInfo.currentHealth -=10;
-			Destroy(collider.gameObject);
+			collider.GetComponent<Projectile>().PlayerHit(gameObject);
 		}
 	}
 
@@ -122,11 +109,11 @@ public class Player : MonoBehaviour {
 				amountToMove.y = jumpHeight;
 			}
 		}
-		else if(!playerPhysics.grounded && !playerPhysics.underWater && playerInfo.GetForm == PlayerInfo.Form.Wizard)
+		else if(!playerPhysics.grounded && !playerInfo.underWater && playerInfo.GetForm == PlayerInfo.Form.Wizard)
 		{
 			speed = 4;
 		}
-		else if (!playerPhysics.grounded && playerPhysics.underWater || playerPhysics.grounded && playerPhysics.underWater)
+		else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerPhysics.underWater)
 		{
 			if(Input.GetButtonDown("Jump"))
 			{
@@ -136,7 +123,7 @@ public class Player : MonoBehaviour {
 		
 		if(playerInfo.GetForm == PlayerInfo.Form.Croc)
 		{
-			if(!playerPhysics.underWater)
+			if(!playerInfo.underWater)
 				speed = 4;
 			else
 				speed = 12;

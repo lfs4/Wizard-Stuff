@@ -24,9 +24,10 @@ public class PlayerInfo : MonoBehaviour {
 	public float manaTimer = 0f;
 	
 	bool playerFighting;
+	
 	public bool underWater;
 	
-	public enum Form {Wizard, Croc};
+	public enum Form {Wizard, Croc, Newt, Iguana, Dragon};
 	
 	Form currentForm;
 
@@ -50,38 +51,45 @@ public class PlayerInfo : MonoBehaviour {
 		}
 	}
 
-	
-	// Update is called once per frame
 	void Update () {
+	UpdateHealth();
+	CheckMana();
+	UpdateBars();
 
-		//print ("Player in combat? " + playerFighting);
-		if (!playerFighting) {
-						if (currentHealth != maxHealth) {
-								timer = timer + Time.deltaTime;
-								if (timer > 6.0f) {
-										if(GetForm == Form.Croc && underWater)
-										{
-											currentHealth += 20;
-											
-										}											
-										else if(GetForm == Form.Wizard && !underWater)
-											currentHealth = currentHealth + 10;
-											
-										timer = 0.0f;
-								}
-						}
+	}
+	void UpdateBars()
+	{
+		healthbar.text = "Health : " + currentHealth + " / 100";
+		manaBar.text = "Mana: " + currentMana + "/ " + maxMana;
+	}
+	void UpdateHealth()
+	{
+		if (!playerFighting) 
+		{
+			if (currentHealth != maxHealth) 
+			{
+				timer = timer + Time.deltaTime;
+				if (timer > 6.0f) {
+					if(GetForm == Form.Croc && underWater)
+					{
+						currentHealth += 20;
+						
+					}											
+					else if(GetForm == Form.Wizard && !underWater)
+					{
+						currentHealth = currentHealth + 10;
+					}
+					timer = 0.0f;
 				}
+			}
+		}
 		if (currentHealth <= 0) 
 		{
 			player.transform.position = startPosition;				
-			currentHealth = 100;
+			currentHealth = maxHealth;
 		}
-		
-		CheckMana();
 		if(currentHealth > maxHealth)
 			currentHealth = maxHealth;
-		healthbar.text = "Health : " + currentHealth + " / 100";
-		manaBar.text = "Mana: " + currentMana + "/ " + maxMana;
 	}
 	public void CheckMana()
 	{	
