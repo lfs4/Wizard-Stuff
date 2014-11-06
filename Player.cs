@@ -45,21 +45,21 @@ public class Player : MonoBehaviour {
 	{
 		if(Input.GetKeyUp(KeyCode.Alpha2))
 		{
-			playerInfo.GetForm = PlayerInfo.Form.Croc;
+			//playerInfo.GetForm = PlayerInfo.Form.Croc;
 		}
 		if(Input.GetKeyUp(KeyCode.Alpha1))
 		{
-			playerInfo.GetForm = PlayerInfo.Form.Wizard;
+			//playerInfo.GetForm = PlayerInfo.Form.Wizard;
 		}
-		playerInfo.manaTimer = 0;
+		//playerInfo.manaTimer = 0;
 	}
 	void UnderWater()
 	{
 		if(playerInfo.underWater)
 		{
-			if(playerInfo.GetForm == PlayerInfo.Form.Wizard)
+			if(playerInfo.formName != "Croc")
 			{
-				playerInfo.underWater = true;
+				//playerInfo.underWater = true;
 				gravity = 5;
 				breathLimit -= Time.deltaTime;
 				if(breathLimit <= 0)
@@ -109,11 +109,11 @@ public class Player : MonoBehaviour {
 				amountToMove.y = jumpHeight;
 			}
 		}
-		else if(!playerPhysics.grounded && !playerInfo.underWater && playerInfo.GetForm == PlayerInfo.Form.Wizard)
+		else if(!playerPhysics.grounded && !playerInfo.underWater && playerInfo.formName == "Wizard")
 		{
 			speed = 4;
 		}
-		else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerPhysics.underWater)
+		else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerInfo.underWater)
 		{
 			if(Input.GetButtonDown("Jump"))
 			{
@@ -121,13 +121,6 @@ public class Player : MonoBehaviour {
 			}
 		}
 		
-		if(playerInfo.GetForm == PlayerInfo.Form.Croc)
-		{
-			if(!playerInfo.underWater)
-				speed = 4;
-			else
-				speed = 12;
-		}
 		targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
 		currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
 		

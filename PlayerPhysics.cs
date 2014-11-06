@@ -150,7 +150,6 @@ public class PlayerPhysics : MonoBehaviour {
 			}
 		}
 		
-		
 		// Check collisions left and right
 		movementStopped = false;
 		for (int i = 0; i<3; i ++) {

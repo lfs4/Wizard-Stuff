@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerInfo : MonoBehaviour {
 
 	public GameObject player;
+	public PlayerForm Player;
+	
+	List<GameObject> forms;
 	
 	int health = 100;
 	int damageCount = 0;
@@ -11,7 +15,7 @@ public class PlayerInfo : MonoBehaviour {
 	int maxMana = 100;
 	int maxHealth = 100;
 	
-	public int damageResistance;
+	
 	
 	public int currentHealth;
 	public int currentMana;
@@ -21,41 +25,43 @@ public class PlayerInfo : MonoBehaviour {
 	public GUIText healthbar;
 	public GUIText manaBar;
 	float timer = 0.0f;
-	public float manaTimer = 0f;
+	float manaTimer = 0f;
 	
+	private float regenTimer = 6.0f;
+
 	bool playerFighting;
 	
 	public bool underWater;
 	
-	public enum Form {Wizard, Croc, Newt, Iguana, Dragon};
+	int currentForm;
 	
-	Form currentForm;
+	
+	/*
+	Player holder variables for form values
+	*/
+	public string formName;
+	public int landRegenAmout;
+	public int waterRegenAmount;
+	public int attackPower;
+	public int manaDrainAmount;
+	public float landMoveSpeed;
+	public float waterMoveSpeed;
+	public int damageResistance;
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 		currentHealth = health;	
 		currentMana = maxMana;
 		startPosition = transform.position;
 		
 	}
-	
-	public Form GetForm
+
+	void Update () 
 	{
-		get
-		{
-			return currentForm;
-		}
-		set
-		{
-			currentForm = value;
-		}
-	}
-
-	void Update () {
-	UpdateHealth();
-	CheckMana();
-	UpdateBars();
-
+		UpdateHealth();
+		CheckMana();
+		UpdateBars();
 	}
 	void UpdateBars()
 	{
@@ -69,15 +75,14 @@ public class PlayerInfo : MonoBehaviour {
 			if (currentHealth != maxHealth) 
 			{
 				timer = timer + Time.deltaTime;
-				if (timer > 6.0f) {
-					if(GetForm == Form.Croc && underWater)
+				if (timer > regenTimer) {
+					if(underWater)
 					{
-						currentHealth += 20;
-						
+						currentHealth += waterRegenAmount;
 					}											
-					else if(GetForm == Form.Wizard && !underWater)
+					else if(!underWater)
 					{
-						currentHealth = currentHealth + 10;
+						currentHealth = currentHealth += landRegenAmout;
 					}
 					timer = 0.0f;
 				}
@@ -94,20 +99,19 @@ public class PlayerInfo : MonoBehaviour {
 	public void CheckMana()
 	{	
 		manaTimer += Time.deltaTime;
-		if(GetForm == Form.Croc)
+		if(formName != "Wizard")
 		{
 			if(manaTimer >= 6f)
 			{
-				currentMana -= 15;
+				currentMana -= manaDrainAmount;
 				if(currentMana <= 0)
 				{
 					currentMana = 0;
-					GetForm = Form.Wizard;
 				}
 				manaTimer = 0;			
 			}
 		}
-		if(GetForm == Form.Wizard)
+		if(formName == "Wizard")
 		{
 			if(manaTimer >= 2f)
 			{	
@@ -121,7 +125,7 @@ public class PlayerInfo : MonoBehaviour {
 	}
 	public void ApplyDamage (int damage) 
 	{
-				damageCount = damageCount + damage;
+				damageCount += damage;
 				if (damageCount == 10) {
 						currentHealth = currentHealth - 10;
 						healthbar.text = "Health : " + currentHealth + " / 100";
