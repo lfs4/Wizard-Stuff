@@ -6,10 +6,9 @@ using System.Collections;
 public class Player : MonoBehaviour {
 	
 	public float gravity;
-	float defaultGravity = 20;
-	public float speed = 8;
-	public float acceleration = 30;
-	public float jumpHeight = 12;
+	public float speed;
+	public float acceleration;
+	public float jumpHeight;
 	
 	public  float currentSpeed;
 	public float targetSpeed;
@@ -38,29 +37,30 @@ public class Player : MonoBehaviour {
 	{
 		CheckPlayerMovement();
 		UnderWater();
-		ChangeForm();
+		InputChangeForm();
 
 	}
-	void ChangeForm()
+	void InputChangeForm()
 	{
-		if(Input.GetKeyUp(KeyCode.Alpha2))
-		{
-			//playerInfo.GetForm = PlayerInfo.Form.Croc;
-		}
 		if(Input.GetKeyUp(KeyCode.Alpha1))
 		{
-			//playerInfo.GetForm = PlayerInfo.Form.Wizard;
+			playerInfo.ChangeForm(0);
 		}
-		//playerInfo.manaTimer = 0;
+		if(Input.GetKeyUp(KeyCode.Alpha2))
+		{
+			playerInfo.ChangeForm(1);
+		}
+		
+	
 	}
 	void UnderWater()
 	{
 		if(playerInfo.underWater)
 		{
-			if(playerInfo.formName != "Croc")
-			{
+			//if(playerInfo.formName != "Croc")
+			//{
 				//playerInfo.underWater = true;
-				gravity = 5;
+				gravity = playerInfo.waterGravity;
 				breathLimit -= Time.deltaTime;
 				if(breathLimit <= 0)
 				{
@@ -72,15 +72,15 @@ public class Player : MonoBehaviour {
 					}
 					
 				}
-			}
+			//}
 			
 		}
 		else 
 		{
-			speed = 8;
-			acceleration = 30;
-			gravity = defaultGravity;
-			playerInfo.underWater = false;
+			speed = playerInfo.landMoveSpeed;
+			acceleration = playerInfo.landAccel;
+			gravity = playerInfo.landAccel;
+			//playerInfo.underWater = false;
 			
 		}
 	}
@@ -109,9 +109,9 @@ public class Player : MonoBehaviour {
 				amountToMove.y = jumpHeight;
 			}
 		}
-		else if(!playerPhysics.grounded && !playerInfo.underWater && playerInfo.formName == "Wizard")
+		else if(!playerPhysics.grounded && !playerInfo.underWater)
 		{
-			speed = 4;
+			speed = playerInfo.landMoveSpeed;
 		}
 		else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerInfo.underWater)
 		{

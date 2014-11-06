@@ -5,9 +5,8 @@ using System.Collections.Generic;
 public class PlayerInfo : MonoBehaviour {
 
 	public GameObject player;
-	public PlayerForm Player;
 	
-	List<GameObject> forms;
+	public List<GameObject> forms;
 	
 	int health = 100;
 	int damageCount = 0;
@@ -42,10 +41,16 @@ public class PlayerInfo : MonoBehaviour {
 	public string formName;
 	public int landRegenAmout;
 	public int waterRegenAmount;
+	public int breathLimit;
 	public int attackPower;
 	public int manaDrainAmount;
 	public float landMoveSpeed;
 	public float waterMoveSpeed;
+	public float floatSpeed;
+	public float landAccel;
+	public float waterAccel;
+	public float landGravity;
+	public float waterGravity;
 	public int damageResistance;
 
 	// Use this for initialization
@@ -54,9 +59,27 @@ public class PlayerInfo : MonoBehaviour {
 		currentHealth = health;	
 		currentMana = maxMana;
 		startPosition = transform.position;
-		
+		ChangeForm(0);
 	}
 
+	public void ChangeForm(int formIndex)
+	{
+		currentForm = formIndex;
+		formName = forms[formIndex].GetComponent<PlayerForm>().formName;
+		landRegenAmout = forms[formIndex].GetComponent<PlayerForm>().landRegenAmount;
+		waterRegenAmount = forms[formIndex].GetComponent<PlayerForm>().waterRegenAmount;
+		breathLimit = forms[formIndex].GetComponent<PlayerForm>().breathLimit;
+		attackPower = forms[formIndex].GetComponent<PlayerForm>().attackPower;
+		manaDrainAmount = forms[formIndex].GetComponent<PlayerForm>().manaDrainAmount;
+		landMoveSpeed = forms[formIndex].GetComponent<PlayerForm>().landMoveSpeed;
+		waterMoveSpeed = forms[formIndex].GetComponent<PlayerForm>().waterMoveSpeed;
+		floatSpeed = forms[formIndex].GetComponent<PlayerForm>().floatSpeed;
+		landAccel = forms[formIndex].GetComponent<PlayerForm>().landAccel;
+		waterAccel = forms[formIndex].GetComponent<PlayerForm>().waterAccel;
+		landGravity = forms[formIndex].GetComponent<PlayerForm>().landGravity;
+		waterGravity = forms[formIndex].GetComponent<PlayerForm>().waterGravity;
+		damageResistance = forms[formIndex].GetComponent<PlayerForm>().damageResistance;
+	}
 	void Update () 
 	{
 		UpdateHealth();
@@ -111,7 +134,7 @@ public class PlayerInfo : MonoBehaviour {
 				manaTimer = 0;			
 			}
 		}
-		if(formName == "Wizard")
+		if(formName == "wizard")
 		{
 			if(manaTimer >= 2f)
 			{	
