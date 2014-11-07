@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class PlayerInfo : MonoBehaviour {
 
 	public GameObject player;
+	public PlayerPhysics playerPhysics;
 	
 	public List<GameObject> forms;
 	
@@ -46,16 +47,20 @@ public class PlayerInfo : MonoBehaviour {
 	public int manaDrainAmount;
 	public float landMoveSpeed;
 	public float waterMoveSpeed;
-	public float floatSpeed;
 	public float landAccel;
 	public float waterAccel;
 	public float landGravity;
 	public float waterGravity;
+	public int landJumpHeight;
+	public float waterFloatSpeed;
+	public float landFloatSpeed;
+	public int waterJumpHeight;
 	public int damageResistance;
 
 	// Use this for initialization
 	void Start () 
 	{
+		playerPhysics = GetComponent<PlayerPhysics>();
 		currentHealth = health;	
 		currentMana = maxMana;
 		startPosition = transform.position;
@@ -64,6 +69,17 @@ public class PlayerInfo : MonoBehaviour {
 
 	public void ChangeForm(int formIndex)
 	{
+		for(int i = 0; i < forms.Count; i++)
+		{
+			if(i == formIndex)
+			{
+				forms[i].gameObject.SetActive(true);
+			}
+			else
+			{
+				forms[i].gameObject.SetActive(false);
+			}
+		}
 		currentForm = formIndex;
 		formName = forms[formIndex].GetComponent<PlayerForm>().formName;
 		landRegenAmout = forms[formIndex].GetComponent<PlayerForm>().landRegenAmount;
@@ -73,12 +89,17 @@ public class PlayerInfo : MonoBehaviour {
 		manaDrainAmount = forms[formIndex].GetComponent<PlayerForm>().manaDrainAmount;
 		landMoveSpeed = forms[formIndex].GetComponent<PlayerForm>().landMoveSpeed;
 		waterMoveSpeed = forms[formIndex].GetComponent<PlayerForm>().waterMoveSpeed;
-		floatSpeed = forms[formIndex].GetComponent<PlayerForm>().floatSpeed;
+		landFloatSpeed = forms[formIndex].GetComponent<PlayerForm>().landFloatSpeed;
+		waterFloatSpeed = forms[formIndex].GetComponent<PlayerForm>().waterFloatSpeed;
 		landAccel = forms[formIndex].GetComponent<PlayerForm>().landAccel;
 		waterAccel = forms[formIndex].GetComponent<PlayerForm>().waterAccel;
 		landGravity = forms[formIndex].GetComponent<PlayerForm>().landGravity;
 		waterGravity = forms[formIndex].GetComponent<PlayerForm>().waterGravity;
+		landJumpHeight = forms[formIndex].GetComponent<PlayerForm>().landJumpHeight;
+		waterJumpHeight = forms[formIndex].GetComponent<PlayerForm>().waterJumpHeight;
 		damageResistance = forms[formIndex].GetComponent<PlayerForm>().damageResistance;
+		
+		playerPhysics.SetNewCollider();
 	}
 	void Update () 
 	{
@@ -90,6 +111,13 @@ public class PlayerInfo : MonoBehaviour {
 	{
 		healthbar.text = "Health : " + currentHealth + " / 100";
 		manaBar.text = "Mana: " + currentMana + "/ " + maxMana;
+	}
+	public int GetForm
+	{
+		get
+		{
+			return currentForm;
+		}
 	}
 	void UpdateHealth()
 	{

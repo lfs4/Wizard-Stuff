@@ -10,7 +10,7 @@ public class PlayerPhysics : MonoBehaviour {
 	
 	private PlayerInfo playerInfo;
 	
-	public BoxCollider collider;
+	private BoxCollider collider;
 	private Vector3 s;
 	private Vector3 c;
 	
@@ -24,8 +24,14 @@ public class PlayerPhysics : MonoBehaviour {
 	RaycastHit hit;
 	
 	void Start() {
-		collider = GetComponent<BoxCollider>();
 		playerInfo = GetComponent<PlayerInfo>();
+		collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
+		s = collider.size;
+		c = collider.center;
+	}
+	public void SetNewCollider()
+	{
+		collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
 		s = collider.size;
 		c = collider.center;
 	}
@@ -49,9 +55,7 @@ public class PlayerPhysics : MonoBehaviour {
 			if (Physics.Raycast(ray,out hit,1,waterMask))
 			{
 				waterCheck++;
-				
 			}
-
 		}	
 		for(int i = 0; i < 3; i ++)
 		{

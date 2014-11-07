@@ -50,6 +50,10 @@ public class Player : MonoBehaviour {
 		{
 			playerInfo.ChangeForm(1);
 		}
+		if(Input.GetKeyUp(KeyCode.Alpha3))
+		{
+			playerInfo.ChangeForm(2);
+		}
 		
 	
 	}
@@ -100,26 +104,44 @@ public class Player : MonoBehaviour {
 			targetSpeed = 0;
 			currentSpeed = 0;
 		}
-		else if(playerPhysics.grounded)
+		else if(!playerInfo.underWater)
 		{
-			amountToMove.y = 0;
-			speed = 8;
-			if(Input.GetButtonDown("Jump"))
+			if(playerPhysics.grounded)
 			{
-				amountToMove.y = jumpHeight;
+				amountToMove.y = 0;
+				speed = playerInfo.landMoveSpeed;
+				if(Input.GetButtonDown("Jump"))
+				{
+					amountToMove.y = playerInfo.landJumpHeight;
+				}
+			}
+			if(!playerPhysics.grounded)
+			{
+				speed = playerInfo.landFloatSpeed;
 			}
 		}
-		else if(!playerPhysics.grounded && !playerInfo.underWater)
+		else if(playerInfo.underWater)
 		{
-			speed = playerInfo.landMoveSpeed;
-		}
-		else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerInfo.underWater)
-		{
+			speed = playerInfo.waterMoveSpeed;
+			acceleration = playerInfo.waterAccel;
+			gravity = playerInfo.waterGravity;
 			if(Input.GetButtonDown("Jump"))
 			{
-				amountToMove.y = jumpHeight;
+				amountToMove.y = playerInfo.waterJumpHeight;
 			}
 		}
+		/*else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerInfo.underWater)
+		{
+			if(!playerPhysics.grounded)
+			{
+				
+			}
+			if(Input.GetButtonDown("Jump"))
+			{
+				
+			}
+		}
+		*/
 		
 		targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
 		currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
