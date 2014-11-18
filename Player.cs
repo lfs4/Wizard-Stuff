@@ -10,8 +10,8 @@ public class Player : MonoBehaviour {
 	public float acceleration;
 	public float jumpHeight;
 	
-	public  float currentSpeed;
-	public float targetSpeed;
+	public  Vector2 currentSpeed;
+	public Vector2 targetSpeed;
 	public Vector2 amountToMove;
 	
 	private PlayerPhysics playerPhysics;
@@ -38,6 +38,7 @@ public class Player : MonoBehaviour {
 		CheckPlayerMovement();
 		UnderWater();
 		InputChangeForm();
+		Debug.Log("Current movement speeds: " + amountToMove);
 
 	}
 	void InputChangeForm()
@@ -99,12 +100,13 @@ public class Player : MonoBehaviour {
 	public void CheckPlayerMovement()
 	{
 		
-		if(playerPhysics.movementStopped)
+		if (playerPhysics.movementStopped)
 		{
-			targetSpeed = 0;
-			currentSpeed = 0;
+			targetSpeed.x = 0;
+			currentSpeed.y = 0;
+			currentSpeed.x = 0;
 		}
-		else if(!playerInfo.underWater)
+		if(!playerInfo.underWater)
 		{
 			if(playerPhysics.grounded)
 			{
@@ -143,11 +145,12 @@ public class Player : MonoBehaviour {
 		}
 		*/
 		
-		targetSpeed = Input.GetAxisRaw("Horizontal") * speed;
-		currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
+		targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
+		currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.x, acceleration);
+		currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
 		
 		
-		amountToMove.x = currentSpeed;
+		amountToMove.x = currentSpeed.x;
 		amountToMove.y -= gravity * Time.deltaTime;
 		playerPhysics.CheckWater(amountToMove * Time.deltaTime);
 		playerPhysics.Move(amountToMove * Time.deltaTime);
