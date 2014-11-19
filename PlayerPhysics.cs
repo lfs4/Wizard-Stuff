@@ -27,16 +27,17 @@ public class PlayerPhysics : MonoBehaviour {
 	
 	void Start() {
 		playerInfo = GetComponent<PlayerInfo>();
-		//collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
-		collider = GetComponent<BoxCollider>();
+		playerInfo.ChangeForm(0);
+		collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
+		//collider = GetComponent<BoxCollider>();
 		s = collider.size;
 		c = collider.center;
 	}
 	public void SetNewCollider()
 	{
-		//collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
-		//s = collider.size;
-		//c = collider.center;
+		collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
+		s = collider.size;
+		c = collider.center;
 	}
 	public void CheckWater(Vector2 moveAmount)
 	{
@@ -168,27 +169,37 @@ public class PlayerPhysics : MonoBehaviour {
 			Debug.DrawRay(ray.origin,ray.direction);
 			
 			if (Physics.Raycast(ray,out hit,Mathf.Abs(deltaX) + skin,wallsMask)) {
-				// Get Distance between player and ground
-				float dst = Vector3.Distance (ray.origin, hit.point);
-				//float hitAngle = Vector2.Angle(hit.normal, Vector2.up);
-				//Debug.Log("Ray hit angle horizontal: " + hitAngle);
-				// Stop player's downwards movement after coming within skin width of a collider
-				if ((dst > skin)) 
+			
+				if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().SpecialPhysicsCondition = true)
 				{
-					deltaX = dst * dir - skin * dir;
-					/*if(hitAngle < 90)
+				
+				}
+				else
+				{
+					
+					
+					// Get Distance between player and ground
+					float dst = Vector3.Distance (ray.origin, hit.point);
+					//float hitAngle = Vector2.Angle(hit.normal, Vector2.up);
+					//Debug.Log("Ray hit angle horizontal: " + hitAngle);
+					// Stop player's downwards movement after coming within skin width of a collider
+					if ((dst > skin)) 
 					{
-						
-						deltaY += (Mathf.Sin(hitAngle));
-					}*/
+						deltaX = dst * dir - skin * dir;
+						/*if(hitAngle < 90)
+						{
+							
+							deltaY += (Mathf.Sin(hitAngle));
+						}*/
+					}
+					
+					else {
+						deltaX = 0;
+					}
+					
+					movementStopped = true;
+					break;
 				}
-				
-				else {
-					deltaX = 0;
-				}
-				
-				movementStopped = true;
-				break;
 				
 			}
 		}

@@ -16,7 +16,6 @@ public class PlayerInfo : MonoBehaviour {
 	int maxHealth = 100;
 	
 	
-	
 	public int currentHealth;
 	public int currentMana;
 	
