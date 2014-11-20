@@ -162,11 +162,12 @@ public class PlayerInfo : MonoBehaviour {
 				if(currentMana <= 0)
 				{
 					currentMana = 0;
+					ChangeForm(0);
 				}
 				manaTimer = 0;			
 			}
 		}
-		if(formName == "wizard")
+		if(formName == "Wizard")
 		{
 			if(manaTimer >= 2f)
 			{	
