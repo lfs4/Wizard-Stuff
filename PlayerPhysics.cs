@@ -156,9 +156,26 @@ public class PlayerPhysics : MonoBehaviour {
 					deltaY = 0;
 				}
 				
-				grounded = true;
+				if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
+				{
+					if(specPhys.canStick)
+						playerInfo.stuck = true;
+					else
+					{
+						playerInfo.stuck = false;
+					}
+					
+					grounded = true;
+					break;
+				}
+				else
+				{
+					grounded = true;
+					
+					break;
+				}
 				
-				break;
+				
 				
 			}
 		}
@@ -175,34 +192,6 @@ public class PlayerPhysics : MonoBehaviour {
 			
 			if (Physics.Raycast(ray,out hit,Mathf.Abs(deltaX) + skin,wallsMask)) 
 			{
-				/*
-				if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
-				{
-					playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specPhys.DoThings();
-					
-					float dst = Vector3.Distance (ray.origin, hit.point);
-					//float hitAngle = Vector2.Angle(hit.normal, Vector2.up);
-					//Debug.Log("Ray hit angle horizontal: " + hitAngle);
-					// Stop player's downwards movement after coming within skin width of a collider
-					if ((dst > skin)) 
-					{
-						deltaX = dst * dir - skin * dir;
-						if(hitAngle < 90)
-						{
-							
-							deltaY += (Mathf.Sin(hitAngle));
-						}
-					}
-					
-					else {
-						deltaX = 0;
-					}
-					if(!grounded)
-						playerInfo.stuck = true;
-				}
-				else
-				{*/
-				
 					// Get Distance between player and ground
 					float dst = Vector3.Distance (ray.origin, hit.point);
 					playerInfo.stuck = false;
@@ -218,8 +207,12 @@ public class PlayerPhysics : MonoBehaviour {
 					
 					if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
 					{
-						if(specPhys.canStick && !grounded)
+						if(specPhys.canStick)
 							playerInfo.stuck = true;
+						else
+						{
+							playerInfo.stuck = false;
+						}
 					}
 					else
 					{

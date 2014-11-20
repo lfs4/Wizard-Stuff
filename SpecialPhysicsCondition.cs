@@ -18,6 +18,9 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 	
 	public bool canStick;
 	
+	public bool canStickToCeiling;
+	public bool canStickToWall;
+	
 	PlayerInfo playerInfo;
 	
 	Ray ray;
@@ -54,6 +57,8 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 		float deltaY = moveAmount.y;
 		float deltaX = moveAmount.x;
 		Vector2 pos = transform.position;
+		canStickToCeiling = false;
+		canStickToWall = false;
 		// check the bottom of the collider to see if im above water
 		for(int i = 0; i < 3; i ++)
 		{
@@ -67,7 +72,8 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			
 			if (Physics.Raycast(ray,out hit,1,ceilingMask))
 			{
-				collisions += "ceiling, ";
+				stickValue++;
+				canStickToCeiling = true;
 			}
 		}	
 		
@@ -82,6 +88,7 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			if(Physics.Raycast(ray, out hit, 1, wallMask))
 			{
 				stickValue++;
+				canStickToWall = true;
 			}
 		}
 		
@@ -96,6 +103,7 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			if(Physics.Raycast(ray, out hit, 1, wallMask))
 			{
 				stickValue++;
+				canStickToWall = true;
 			}
 		}
 		

@@ -110,6 +110,7 @@ public class PlayerInfo : MonoBehaviour {
 		CheckMana();
 		UpdateBars();
 	}
+
 	void UpdateBars()
 	{
 		healthbar.text = "Health : " + currentHealth + " / 100";

@@ -164,7 +164,11 @@ public class Player : MonoBehaviour {
 			}
 		}
 		
-		if(!playerInfo.stuck && !currentForm.specPhys.canStick)
+		if(currentForm.specialPhysicsCondition)
+			if(!currentForm.specPhys.canStickToCeiling && !currentForm.specPhys.canStickToWall)
+				playerInfo.stuck = false;
+		
+		if(!playerInfo.stuck)
 		{
 			targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
 			//targetSpeed.y = 0;
@@ -173,7 +177,39 @@ public class Player : MonoBehaviour {
 			amountToMove.x = currentSpeed.x;
 			amountToMove.y -= gravity * Time.deltaTime;
 		}
-		else if(!playerInfo.stuck && currentForm.specPhys.canStick)
+		else if(playerInfo.stuck)
+		{
+			if(currentForm.specPhys.canStickToWall && currentForm.specPhys.canStickToCeiling)
+			{
+				targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
+				targetSpeed.y = Input.GetAxisRaw("Vertical") * speed;
+				//targetSpeed.y = 0;
+				currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
+				amountToMove.x = currentSpeed.x;
+				currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.y, acceleration);
+				amountToMove.y = currentSpeed.y;
+				
+				Debug.Log("target speed: " + targetSpeed + " " + "amount to move: " + amountToMove);
+			}
+			else if(currentForm.specPhys.canStickToCeiling)
+			{
+				targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
+				//targetSpeed.y = 0;
+				currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
+				amountToMove.x = currentSpeed.x;
+			}
+			else if(currentForm.specPhys.canStickToWall)
+			{
+				targetSpeed.y = Input.GetAxisRaw("Vertical") * speed;
+				
+				currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.y, acceleration);
+				amountToMove.y = currentSpeed.y;
+				currentSpeed.x = 0;
+				amountToMove.x = 0;
+			}
+			
+		}
+		/*else if(!playerInfo.stuck && currentForm.specPhys.canStick)
 		{
 			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.x, acceleration);
 			currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
@@ -188,7 +224,7 @@ public class Player : MonoBehaviour {
 			amountToMove.y = currentSpeed.y;
 			currentSpeed.x = 0;
 			amountToMove.x = 0;
-		}
+		}*/
 		
 		//Debug.Log(currentSpeed);
 		
