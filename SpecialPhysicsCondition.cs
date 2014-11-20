@@ -18,8 +18,6 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 	
 	public bool canStick;
 	
-	PlayerPhysics physics;
-
 	PlayerInfo playerInfo;
 	
 	Ray ray;
@@ -52,6 +50,7 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 	void NewtWallCling(Vector2 moveAmount)
 	{
 		string collisions = "You are hitting: ";
+		int stickValue = 0;
 		float deltaY = moveAmount.y;
 		float deltaX = moveAmount.x;
 		Vector2 pos = transform.position;
@@ -82,10 +81,8 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			
 			if(Physics.Raycast(ray, out hit, 1, wallMask))
 			{
-				canStick = true;
+				stickValue++;
 			}
-			else
-				canStick = false;
 		}
 		
 		for(int i = 0; i < 3; i ++)
@@ -98,10 +95,14 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			
 			if(Physics.Raycast(ray, out hit, 1, wallMask))
 			{
-				collisions += "wall right";
+				stickValue++;
 			}
 		}
 		
+		if(stickValue > 0)
+			canStick = true;
+		else 
+			canStick = false;
 		//Debug.Log(collisions);
 	}
 

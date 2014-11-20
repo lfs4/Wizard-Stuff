@@ -136,18 +136,20 @@ public class Player : MonoBehaviour {
 				if(Input.GetButtonDown("Jump"))
 				{
 					if(!playerInfo.stuck)
-						amountToMove.y = playerInfo.landJumpHeight;
-					else
-					{
-						playerInfo.stuck = false;
-						amountToMove.x = playerInfo.landJumpHeight * 2;
-					}
-					
+						amountToMove.y = playerInfo.landJumpHeight;		
 				}
 			}
 			if(!playerPhysics.grounded)
 			{
 				speed = playerInfo.landFloatSpeed;
+			}
+			if(playerInfo.stuck && !playerPhysics.grounded)
+			{
+				if(Input.GetButtonDown("Jump"))
+				{
+					playerInfo.stuck = false;
+					amountToMove.x = 10000f;
+				}
 			}
 		}
 		else if(playerInfo.underWater)
@@ -155,28 +157,24 @@ public class Player : MonoBehaviour {
 			speed = playerInfo.waterMoveSpeed;
 			acceleration = playerInfo.waterAccel;
 			gravity = playerInfo.waterGravity;
+			playerInfo.stuck = false;
 			if(Input.GetButtonDown("Jump"))
 			{
 				amountToMove.y = playerInfo.waterJumpHeight;
 			}
 		}
-		/*else if (!playerPhysics.grounded && playerInfo.underWater || playerPhysics.grounded && playerInfo.underWater)
-		{
-			if(!playerPhysics.grounded)
-			{
-				
-			}
-			if(Input.GetButtonDown("Jump"))
-			{
-				
-			}
-		}
-		*/
 		
-		if(!playerInfo.stuck)
+		if(!playerInfo.stuck && !currentForm.specPhys.canStick)
 		{
 			targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
 			//targetSpeed.y = 0;
+			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.x, acceleration);
+			currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
+			amountToMove.x = currentSpeed.x;
+			amountToMove.y -= gravity * Time.deltaTime;
+		}
+		else if(!playerInfo.stuck && currentForm.specPhys.canStick)
+		{
 			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.x, acceleration);
 			currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
 			amountToMove.x = currentSpeed.x;
@@ -192,20 +190,7 @@ public class Player : MonoBehaviour {
 			amountToMove.x = 0;
 		}
 		
-		
-		//currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
-		
-		/*
-		if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
-		{
-			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.y, acceleration);
-		}
-		*/
-		
-		
-	
-		//Debug.Log("Current Movement Amount: " + amountToMove + " CurrentSpeed: " + currentSpeed);
-		
+		//Debug.Log(currentSpeed);
 		
 		playerPhysics.CheckWater(amountToMove * Time.deltaTime);
 		if(currentForm.specialPhysicsCondition)
