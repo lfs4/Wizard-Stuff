@@ -6,6 +6,8 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 	public string form;
 	
 	public BoxCollider collider;
+	
+	public BoxCollider altCollider;
 
 	Vector3 c;
 	Vector3 s;	
@@ -20,6 +22,8 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 	
 	public bool canStickToCeiling;
 	public bool canStickToWall;
+	public string stick = "";
+	string stickOld = "";
 	
 	PlayerInfo playerInfo;
 	
@@ -31,7 +35,8 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 	
 	void Start()
 	{
-		SetCollider();
+		collider = GetComponent<BoxCollider>();
+		SetCollider(collider);
 	}
 	public void HandleSpecialCases(Vector2 moveAmount)
 	{
@@ -44,9 +49,10 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			DragonJumpAndFly();
 		}
 	}
-	public void SetCollider()
+	public void SetCollider(BoxCollider _collider)
 	{
-		collider = GetComponent<BoxCollider>();
+		collider = _collider;
+		//altCollider = GetComponentInChildren<BoxCollider>();
 		c = collider.center;
 		s = collider.size;
 	}
@@ -111,6 +117,25 @@ public class SpecialPhysicsCondition : MonoBehaviour {
 			canStick = true;
 		else 
 			canStick = false;
+		/*	
+		if (canStick)
+		{
+			if(canStickToWall && canStickToCeiling)
+			{
+				//just here to make sure the collider doest keep switihing if both are true
+			}
+			else if(canStickToWall)
+			{
+				SetCollider(altCollider);
+			}
+			else if(canStickToCeiling)
+			{
+				SetCollider(GetComponent<BoxCollider>());
+				stick = "ciel";
+			}
+			
+			GetComponentInParent<PlayerPhysics>().SetNewCollider();
+		}*/
 		//Debug.Log(collisions);
 	}
 

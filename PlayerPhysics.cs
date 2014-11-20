@@ -13,7 +13,7 @@ public class PlayerPhysics : MonoBehaviour {
 	public SpecialPhysicsCondition specPhys;
 
 	
-	private BoxCollider collider;
+	public BoxCollider collider;
 	private Vector3 s;
 	private Vector3 c;
 	
