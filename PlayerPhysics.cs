@@ -10,6 +10,8 @@ public class PlayerPhysics : MonoBehaviour {
 	public LayerMask wallsMask;
 	
 	private PlayerInfo playerInfo;
+	public SpecialPhysicsCondition specPhys;
+
 	
 	private BoxCollider collider;
 	private Vector3 s;
@@ -22,6 +24,7 @@ public class PlayerPhysics : MonoBehaviour {
 	public bool movementStopped;
 	//public bool movementStoppedY;
 			
+	
 	Ray ray;
 	RaycastHit hit;
 	
@@ -38,6 +41,7 @@ public class PlayerPhysics : MonoBehaviour {
 		collider = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().collider;
 		s = collider.size;
 		c = collider.center;
+
 	}
 	public void CheckWater(Vector2 moveAmount)
 	{
@@ -69,7 +73,7 @@ public class PlayerPhysics : MonoBehaviour {
 			float y = pos.y + c.y + s.y/2 * - 1; // Bottom of collider
 			
 			ray = new Ray(new Vector3(x,y), new Vector2(0, -1));
-			//Debug.DrawRay(ray.origin,ray.direction);
+			//Debug.DrawRay(ray.origin,ray.direction, Color.blue);
 			
 			if (Physics.Raycast(ray,out hit,1,waterMask))
 			{
@@ -133,9 +137,10 @@ public class PlayerPhysics : MonoBehaviour {
 			float y = p.y + c.y + s.y/2 * dir; // Bottom of collider
 			
 			ray = new Ray(new Vector3(x,y, p.z), new Vector2(0,dir));
-			Debug.DrawRay(ray.origin,ray.direction);
+			//Debug.DrawRay(ray.origin,ray.direction);
 			
-			if (Physics.Raycast(ray,out hit,Mathf.Abs(deltaY) + skin,collisionMask)) {
+			if (Physics.Raycast(ray,out hit,Mathf.Abs(deltaY) + skin,collisionMask)) 
+			{
 				// Get Distance between player and ground
 				float dst = Vector3.Distance (ray.origin, hit.point);
 				
@@ -166,19 +171,15 @@ public class PlayerPhysics : MonoBehaviour {
 			float y = p.y + c.y - s.y/2 + s.y/2 * i;
 			
 			ray = new Ray(new Vector3(x,y, p.z), new Vector2(dir,0));
-			Debug.DrawRay(ray.origin,ray.direction);
+			//Debug.DrawRay(ray.origin,ray.direction);
 			
-			if (Physics.Raycast(ray,out hit,Mathf.Abs(deltaX) + skin,wallsMask)) {
-			
-				if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().SpecialPhysicsCondition = true)
+			if (Physics.Raycast(ray,out hit,Mathf.Abs(deltaX) + skin,wallsMask)) 
+			{
+				/*
+				if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
 				{
-				
-				}
-				else
-				{
+					playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specPhys.DoThings();
 					
-					
-					// Get Distance between player and ground
 					float dst = Vector3.Distance (ray.origin, hit.point);
 					//float hitAngle = Vector2.Angle(hit.normal, Vector2.up);
 					//Debug.Log("Ray hit angle horizontal: " + hitAngle);
@@ -186,26 +187,51 @@ public class PlayerPhysics : MonoBehaviour {
 					if ((dst > skin)) 
 					{
 						deltaX = dst * dir - skin * dir;
-						/*if(hitAngle < 90)
+						if(hitAngle < 90)
 						{
 							
 							deltaY += (Mathf.Sin(hitAngle));
-						}*/
+						}
+					}
+					
+					else {
+						deltaX = 0;
+					}
+					if(!grounded)
+						playerInfo.stuck = true;
+				}
+				else
+				{*/
+				
+					// Get Distance between player and ground
+					float dst = Vector3.Distance (ray.origin, hit.point);
+					playerInfo.stuck = false;
+					// Stop player's downwards movement after coming within skin width of a collider
+					if ((dst > skin)) 
+					{
+						deltaX = dst * dir - skin * dir;
 					}
 					
 					else {
 						deltaX = 0;
 					}
 					
-					movementStopped = true;
-					break;
-				}
-				
+					if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
+					{
+						if(specPhys.canStick && !grounded)
+							playerInfo.stuck = true;
+					}
+					else
+					{
+						movementStopped = true;
+						break;
+					}
 			}
+
 		}
 	
 		Vector2 finalTransform = new Vector2(deltaX,deltaY);
-	
+		
 		
 		transform.Translate(finalTransform);
 	}

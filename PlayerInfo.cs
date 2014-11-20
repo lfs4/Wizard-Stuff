@@ -32,8 +32,11 @@ public class PlayerInfo : MonoBehaviour {
 	
 	public bool underWater;
 	
+	public bool stuck;
+	
 	int currentForm;
 	
+	public PlayerForm currentFormObj;
 	
 	/*
 	Player holder variables for form values
@@ -99,6 +102,7 @@ public class PlayerInfo : MonoBehaviour {
 		damageResistance = forms[formIndex].GetComponent<PlayerForm>().damageResistance;
 		
 		playerPhysics.SetNewCollider();
+		currentFormObj = forms[currentForm].GetComponent<PlayerForm>();
 	}
 	void Update () 
 	{

@@ -5,10 +5,10 @@ using System.Collections;
 [RequireComponent (typeof(PlayerPhysics))]
 public class Player : MonoBehaviour {
 	
-	public float gravity;
+	float gravity;
 	public float speed;
-	public float acceleration;
-	public float jumpHeight;
+	float acceleration;
+	float jumpHeight;
 	
 	public  Vector2 currentSpeed;
 	public Vector2 targetSpeed;
@@ -18,6 +18,8 @@ public class Player : MonoBehaviour {
 	private PlayerInfo playerInfo;
 	
 	private Vector2 startPos;
+	
+	private PlayerForm currentForm;
 	
 	float breathLimit = 5f;
 	float breathDamageTimer = 2f;
@@ -29,16 +31,20 @@ public class Player : MonoBehaviour {
 	{
 		playerPhysics = GetComponent<PlayerPhysics>();
 		playerInfo = GetComponent<PlayerInfo>();
+		currentForm = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>();
 		startPos.y = transform.position.y;
 		startPos.x = transform.position.x;
 	}
+	
 	// Update is called once per frame
 	public void Update () 
 	{
 		CheckPlayerMovement();
 		UnderWater();
 		InputChangeForm();
-		Debug.Log("Current movement speeds: " + amountToMove);
+		//if(!playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition)
+		//	playerInfo.stuck = false;
+		//Debug.Log("Current movement speeds: " + amountToMove);
 
 	}
 	void InputChangeForm()
@@ -56,6 +62,16 @@ public class Player : MonoBehaviour {
 			playerInfo.ChangeForm(2);
 		}
 		
+		
+		currentForm = playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>();
+		if(currentForm.specialPhysicsCondition)
+			playerPhysics.specPhys = currentForm.specPhys;
+		else 
+		{
+			playerPhysics.specPhys = null;
+			playerInfo.stuck = false;
+		}
+
 	
 	}
 	void UnderWater()
@@ -84,10 +100,15 @@ public class Player : MonoBehaviour {
 		{
 			speed = playerInfo.landMoveSpeed;
 			acceleration = playerInfo.landAccel;
-			gravity = playerInfo.landAccel;
+			gravity = playerInfo.landGravity;
 			//playerInfo.underWater = false;
 			
 		}
+		if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition)
+		{
+			//gravity *= -1;
+		}
+		
 	}
 	void OnTriggerEnter(Collider collider)
 	{
@@ -114,7 +135,14 @@ public class Player : MonoBehaviour {
 				speed = playerInfo.landMoveSpeed;
 				if(Input.GetButtonDown("Jump"))
 				{
-					amountToMove.y = playerInfo.landJumpHeight;
+					if(!playerInfo.stuck)
+						amountToMove.y = playerInfo.landJumpHeight;
+					else
+					{
+						playerInfo.stuck = false;
+						amountToMove.x = playerInfo.landJumpHeight * 2;
+					}
+					
 				}
 			}
 			if(!playerPhysics.grounded)
@@ -145,14 +173,43 @@ public class Player : MonoBehaviour {
 		}
 		*/
 		
-		targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
-		currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.x, acceleration);
-		currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
+		if(!playerInfo.stuck)
+		{
+			targetSpeed.x = Input.GetAxisRaw("Horizontal") * speed;
+			//targetSpeed.y = 0;
+			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.x, acceleration);
+			currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
+			amountToMove.x = currentSpeed.x;
+			amountToMove.y -= gravity * Time.deltaTime;
+		}
+		else
+		{
+			targetSpeed.y = Input.GetAxisRaw("Vertical") * speed;
+			
+			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.y, acceleration);
+			amountToMove.y = currentSpeed.y;
+			currentSpeed.x = 0;
+			amountToMove.x = 0;
+		}
 		
 		
-		amountToMove.x = currentSpeed.x;
-		amountToMove.y -= gravity * Time.deltaTime;
+		//currentSpeed.x = IncrementTowards(currentSpeed.x, targetSpeed.x, acceleration);
+		
+		/*
+		if(playerInfo.forms[playerInfo.GetForm].GetComponent<PlayerForm>().specialPhysicsCondition == true)
+		{
+			currentSpeed.y = IncrementTowards(currentSpeed.y, targetSpeed.y, acceleration);
+		}
+		*/
+		
+		
+	
+		//Debug.Log("Current Movement Amount: " + amountToMove + " CurrentSpeed: " + currentSpeed);
+		
+		
 		playerPhysics.CheckWater(amountToMove * Time.deltaTime);
+		if(currentForm.specialPhysicsCondition)
+			currentForm.specPhys.GetComponent<SpecialPhysicsCondition>().HandleSpecialCases(amountToMove * Time.deltaTime);
 		playerPhysics.Move(amountToMove * Time.deltaTime);
 		
 	}
